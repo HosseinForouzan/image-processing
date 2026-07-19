@@ -1,17 +1,18 @@
 package main
 
 import (
-	"fmt"
 	"image_processing/delivery/httpserver"
 	"image_processing/repository/psql"
+	"image_processing/repository/storage"
 	"image_processing/service/imageservice"
 )
 
 func main() {
-	p := psql.NewPgxPool()
-	fmt.Println(p)
+	root := "storage/originals"
+	psqlRepo := psql.NewPgxPool()
+	storageRepo := storage.New(root)
 
-	imageSvc := imageservice.New()
+	imageSvc := imageservice.New(psqlRepo, storageRepo)
 
 	handler := httpserver.New(imageSvc)
 

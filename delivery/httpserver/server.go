@@ -25,6 +25,7 @@ func New(imageSvc imageservice.Service) Server {
 func (s Server) Serve() {
 	s.Router.Use(middleware.Recover())
 	s.Router.GET("/health-check", s.healthCheck)
+	s.handler.SetRoutes(s.Router)
 
 
 	address := fmt.Sprintf(":%d", 8080)

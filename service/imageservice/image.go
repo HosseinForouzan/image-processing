@@ -1,26 +1,25 @@
 package imageservice
 
-type ImageRepository interface {
+import (
+	"image_processing/entity"
+	"mime/multipart"
+)
 
+type ImageRepository interface {
 }
 
 type Storage interface {
-
+	Save(fileHeader *multipart.FileHeader) (entity.Image, error)
 }
 
 type Service struct {
-	imageRepo ImageRepository
-	storage Storage
+	ImageRepo ImageRepository
+	Storage   Storage
 }
 
-// func New(imageRepo ImageRepository, storage Storage) Service {
-// 	return Service{
-// 		imageRepo: imageRepo,
-// 		storage: storage,
-// 	}
-// }
-
-func New() Service {
-	return Service{}
+func New(imageRepo ImageRepository, storage Storage) Service {
+	return Service{
+		ImageRepo: imageRepo,
+		Storage:   storage,
+	}
 }
-
