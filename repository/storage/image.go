@@ -41,3 +41,7 @@ func (l LocalStorage) Save(ctx context.Context,fileHeader *multipart.FileHeader)
 
 	}, nil
 }
+
+func (l LocalStorage) Remove(ctx context.Context, fileName string) error {
+	return os.Remove(l.root + "/" + fileName)
+}

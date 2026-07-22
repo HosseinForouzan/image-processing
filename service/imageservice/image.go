@@ -15,6 +15,7 @@ type ImageRepository interface {
 
 type Storage interface {
 	Save(ctx context.Context ,fileHeader *multipart.FileHeader) (entity.Image, error)
+	Remove(ctx context.Context, fileName string) error
 }
 
 type Service struct {
@@ -50,6 +51,10 @@ func (s Service) Upload(ctx context.Context, req param.UploadImageRequest) (para
 
 	imageRepo, err := s.ImageRepo.Save(ctx, imageEntity)
 	if err != nil {
+		sErr := s.Storage.Remove(ctx, imageFile.OriginalKey)
+		if sErr != nil {
+			return param.UploadImageResponse{},fmt.Errorf("error in remove file: %w", sErr)
+		}
 		return param.UploadImageResponse{}, fmt.Errorf("unexpected error:%w", err)
 	}
 

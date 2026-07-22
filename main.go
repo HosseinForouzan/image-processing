@@ -9,6 +9,7 @@ import (
 )
 
 func main() {
+
 	root := "storage/originals"
 	psql := psql.NewPgxPool()
 	psqlImage := psqlimage.New(psql)
