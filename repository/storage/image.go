@@ -1,6 +1,7 @@
 package storage
 
 import (
+	"context"
 	"fmt"
 	"image_processing/entity"
 	"io"
@@ -11,7 +12,7 @@ import (
 	"github.com/google/uuid"
 )
 
-func (l LocalStorage) Save(fileHeader *multipart.FileHeader) (entity.Image,error) {
+func (l LocalStorage) Save(ctx context.Context,fileHeader *multipart.FileHeader) (entity.Image,error) {
 	file, err := fileHeader.Open()
 	if err != nil {
 		return entity.Image{}, fmt.Errorf("error in open image: %w", err)
