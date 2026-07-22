@@ -25,7 +25,7 @@ func (p *PsqlDB) Conn() *pgx.Pool {
 }
 
 
-func NewPgxPool() *pgx.Pool {
+func NewPgxPool() *PsqlDB {
 	ctx := context.Background()
 	// urlExample := fmt.Sprintf("postgres://%s:%s@%s:%d/%s", config.Username, config.Password, config.Host, config.Port, config.DBName)
 	urlExample := "postgres://myuser:secret@localhost:5431/image_db"
@@ -42,5 +42,5 @@ func NewPgxPool() *pgx.Pool {
 
 	log.Println("db connected")
 
-	return db
+	return &PsqlDB{db: db}
 }

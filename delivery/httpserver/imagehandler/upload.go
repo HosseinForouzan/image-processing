@@ -23,14 +23,6 @@ func (h Handler) Upload(c *echo.Context) error {
 
 
 
-	
-
-	// return c.JSON(http.StatusCreated, map[string]any{
-	// 	"filename": fileHeader.Filename,
-	// 	"size": fileHeader.Size,
-	// 	"content-type": fileHeader.Header.Get("Content-Type"),
-	// })
-
 	return c.JSON(http.StatusCreated, resp)
 
 
