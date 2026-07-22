@@ -1,11 +1,11 @@
 package param
 import "mime/multipart"
 
-type SaveImageRequest struct {
-	FileHeader *multipart.FileHeader
+type UploadImageRequest struct {
+	Image *multipart.FileHeader
 }
 
-type SaveImageResponse struct {
+type UploadImageResponse struct {
 	ID uint
 	OriginalName string
 	OriginalKey string

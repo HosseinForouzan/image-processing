@@ -31,10 +31,10 @@ func New(imageRepo ImageRepository, storage Storage) Service {
 
 }
 
-func (s Service) SaveImage(ctx context.Context, req param.SaveImageRequest) (param.SaveImageResponse, error) {
-	imageFile, err := s.Storage.Save(ctx, req.FileHeader)
+func (s Service) Upload(ctx context.Context, req param.UploadImageRequest) (param.UploadImageResponse, error) {
+	imageFile, err := s.Storage.Save(ctx, req.Image)
 	if err != nil {
-		return param.SaveImageResponse{}, fmt.Errorf("can't save image")
+		return param.UploadImageResponse{}, fmt.Errorf("can't save image")
 	}
 
 
@@ -50,12 +50,12 @@ func (s Service) SaveImage(ctx context.Context, req param.SaveImageRequest) (par
 
 	imageRepo, err := s.ImageRepo.Save(ctx, imageEntity)
 	if err != nil {
-		return param.SaveImageResponse{}, fmt.Errorf("unexpected error:%w", err)
+		return param.UploadImageResponse{}, fmt.Errorf("unexpected error:%w", err)
 	}
 
 
 
-	return param.SaveImageResponse{
+	return param.UploadImageResponse{
 		ID: imageRepo.ID,
 		OriginalName: imageFile.OriginalName,
 		OriginalKey: imageFile.OriginalKey,

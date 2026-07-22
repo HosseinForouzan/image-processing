@@ -12,11 +12,15 @@ func (h Handler) Upload(c *echo.Context) error {
 	if err != nil {
 		return echo.NewHTTPError(http.StatusBadRequest, err.Error())
 	}
-	req := param.SaveImageRequest{
-		FileHeader: fileHeader,
+	req := param.UploadImageRequest{
+		Image: fileHeader,
 	}
 
-	resp, err := h.imageSvc.SaveImage(c.Request().Context(), req)
+	if err := h.imageValidator.ValidateUploadImageRequest(req); err != nil {
+		return echo.NewHTTPError(http.StatusBadRequest, err.Error())
+	}
+
+	resp, err := h.imageSvc.Upload(c.Request().Context(), req)
 	if err != nil {
 		return echo.NewHTTPError(http.StatusBadRequest, err.Error())
 	}
