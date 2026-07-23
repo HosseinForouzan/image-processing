@@ -45,3 +45,10 @@ func (l LocalStorage) Save(ctx context.Context,fileHeader *multipart.FileHeader)
 func (l LocalStorage) Remove(ctx context.Context, fileName string) error {
 	return os.Remove(l.root + "/" + fileName)
 }
+
+func (l LocalStorage) Open(ctx context.Context, key string) (io.ReadCloser, error) {
+	path := filepath.Join(l.root, key)
+
+	return os.Open(path)
+}
+

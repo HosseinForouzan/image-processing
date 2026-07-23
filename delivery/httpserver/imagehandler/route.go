@@ -7,6 +7,7 @@ func (h Handler) SetRoutes(e *echo.Echo) {
 
 	imageGroup.POST("/upload", h.Upload)
 	imageGroup.GET("/:id", h.Get)
+	imageGroup.GET("/:id/original", h.DownloadOriginal)
 
 }
 

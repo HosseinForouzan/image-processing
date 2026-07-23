@@ -6,6 +6,7 @@ import (
 	"image_processing/constant"
 	"image_processing/entity"
 	"image_processing/param"
+	"io"
 	"mime/multipart"
 )
 
@@ -17,6 +18,7 @@ type ImageRepository interface {
 type Storage interface {
 	Save(ctx context.Context ,fileHeader *multipart.FileHeader) (entity.Image, error)
 	Remove(ctx context.Context, fileName string) error
+	Open(ctx context.Context, key string) (io.ReadCloser, error)
 }
 
 type Service struct {
@@ -88,4 +90,24 @@ func (s Service) Get(ctx context.Context, req param.GetImageRequest) (param.GetI
 		Size: image.Size,
 		Status: image.Status,
 	}, nil
+}
+
+func (s Service) DownloadOriginal(ctx context.Context, req param.DownloadImageRequest) (param.DownloadImageResponse, error) {
+	image, err := s.ImageRepo.Get(ctx, req.ID)
+	if err != nil {
+		return param.DownloadImageResponse{}, fmt.Errorf("unexpected error: %w", err)
+	}
+	file, err := s.Storage.Open(ctx, image.OriginalKey)
+
+	return param.DownloadImageResponse{
+		ID: image.ID,
+		OriginalName: image.OriginalName,
+		OriginalKey: image.OriginalKey,
+		ThumbnailKey: image.ThumbnailKey,
+		ContentType: image.ContentType,
+		Size: image.Size,
+		Status: image.Status,
+		File: file,
+	}, nil
+
 }
