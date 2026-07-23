@@ -20,3 +20,16 @@ func (d *DB) Save(ctx context.Context, image entity.Image) (entity.Image, error)
 
 	return image, nil
 }
+
+func (d *DB) Get(ctx context.Context, id uint) (entity.Image, error) {
+	var image entity.Image
+
+	query := `SELECT id,original_name,original_key,thumbnail_key, content_type,size,status FROM images WHERE id = $1`
+	err := d.conn.Conn().QueryRow(ctx, query, id).Scan(&image.ID, &image.OriginalName,
+		 &image.OriginalKey, &image.ThumbnailKey, &image.ContentType, &image.Size, &image.Status)
+	if err != nil {
+		return entity.Image{}, fmt.Errorf("can't get images: %w", err)
+	}
+
+	return image, nil
+}

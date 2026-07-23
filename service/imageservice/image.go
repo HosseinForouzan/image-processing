@@ -11,6 +11,7 @@ import (
 
 type ImageRepository interface {
 	Save(ctx context.Context, image entity.Image) (entity.Image, error)
+	Get(ctx context.Context, id uint) (entity.Image, error)
 }
 
 type Storage interface {
@@ -70,7 +71,21 @@ func (s Service) Upload(ctx context.Context, req param.UploadImageRequest) (para
 		Status: imageRepo.Status,
 
 	}, nil
+}
 
+func (s Service) Get(ctx context.Context, req param.GetImageRequest) (param.GetImageResponse, error) {
+	image, err := s.ImageRepo.Get(ctx, req.ID)
+	if err != nil {
+		return param.GetImageResponse{}, fmt.Errorf("unexpected error: %w", err)
+	}
 
-
+	return param.GetImageResponse{
+		ID: image.ID,
+		OriginalName: image.OriginalName,
+		OriginalKey: image.OriginalKey,
+		ThumbnailKey: image.ThumbnailKey,
+		ContentType: image.ContentType,
+		Size: image.Size,
+		Status: image.Status,
+	}, nil
 }
