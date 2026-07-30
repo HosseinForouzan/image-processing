@@ -1,6 +1,7 @@
 package imageservice
 
 import (
+	"bytes"
 	"context"
 	"encoding/json"
 	"fmt"
@@ -9,16 +10,20 @@ import (
 	"image_processing/event"
 	"image_processing/param"
 	"io"
-	"mime/multipart"
+	"path/filepath"
+
+
+	"github.com/disintegration/imaging"
+	"github.com/google/uuid"
 )
 
 type ImageRepository interface {
 	Save(ctx context.Context, image entity.Image) (entity.Image, error)
-	Get(ctx context.Context, id uint) (entity.Image, error)
+	GetByID(ctx context.Context, id uint) (entity.Image, error)
 }
 
 type Storage interface {
-	Save(ctx context.Context ,fileHeader *multipart.FileHeader) (entity.Image, error)
+	Save(ctx context.Context ,key string, file io.Reader) ( error)
 	Remove(ctx context.Context, fileName string) error
 	Open(ctx context.Context, key string) (io.ReadCloser, error)
 }
@@ -44,7 +49,12 @@ func New(imageRepo ImageRepository, storage Storage, broker Broker) Service {
 }
 
 func (s Service) Upload(ctx context.Context, req param.UploadImageRequest) (param.UploadImageResponse, error) {
-	imageFile, err := s.storage.Save(ctx, req.Image)
+	fileHeader := req.Image
+	file, _ := fileHeader.Open()
+	id := uuid.New()
+	ext := filepath.Ext(fileHeader.Filename)
+	fileName := id.String() + ext
+	imageFile, err := s.storage.Save(ctx, fileName, file)
 	if err != nil {
 		return param.UploadImageResponse{}, fmt.Errorf("can't save image")
 	}
@@ -95,7 +105,7 @@ func (s Service) Upload(ctx context.Context, req param.UploadImageRequest) (para
 }
 
 func (s Service) Get(ctx context.Context, req param.GetImageRequest) (param.GetImageResponse, error) {
-	image, err := s.imageRepo.Get(ctx, req.ID)
+	image, err := s.imageRepo.GetByID(ctx, req.ID)
 	if err != nil {
 		return param.GetImageResponse{}, fmt.Errorf("unexpected error: %w", err)
 	}
@@ -112,7 +122,7 @@ func (s Service) Get(ctx context.Context, req param.GetImageRequest) (param.GetI
 }
 
 func (s Service) DownloadOriginal(ctx context.Context, req param.DownloadImageRequest) (param.DownloadImageResponse, error) {
-	image, err := s.imageRepo.Get(ctx, req.ID)
+	image, err := s.imageRepo.GetByID(ctx, req.ID)
 	if err != nil {
 		return param.DownloadImageResponse{}, fmt.Errorf("unexpected error: %w", err)
 	}
@@ -132,6 +142,27 @@ func (s Service) DownloadOriginal(ctx context.Context, req param.DownloadImageRe
 }
 
 func (s Service) ProcessImage(ctx context.Context, imageID uint) error {
-	fmt.Println("image id: ", imageID)
+	image, err := s.imageRepo.GetByID(ctx, imageID)
+	if err != nil {
+		return err
+	}
+
+	file, err := s.storage.Open(ctx, image.OriginalKey)
+
+	img, err := imaging.Decode(file)
+	if err != nil {
+		return err
+	}
+
+	thumbnail := imaging.Thumbnail(img, 300, 300, imaging.Lanczos)
+
+	buf := new(bytes.Buffer)
+	err = imaging.Encode(buf, thumbnail, imaging.PNG)
+
+	thumbnailKey := fmt.Sprintf("thumbnails/%s.png", image.ID)
+	err = s.storage.Save(ctx, thumbnailKey, buf)
+
+
+
 	return nil
 }

@@ -21,7 +21,7 @@ func (d *DB) Save(ctx context.Context, image entity.Image) (entity.Image, error)
 	return image, nil
 }
 
-func (d *DB) Get(ctx context.Context, id uint) (entity.Image, error) {
+func (d *DB) GetByID(ctx context.Context, id uint) (entity.Image, error) {
 	var image entity.Image
 
 	query := `SELECT id,original_name,original_key,thumbnail_key, content_type,size,status FROM images WHERE id = $1`
