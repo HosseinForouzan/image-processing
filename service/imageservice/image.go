@@ -54,25 +54,25 @@ func (s Service) Upload(ctx context.Context, req param.UploadImageRequest) (para
 	id := uuid.New()
 	ext := filepath.Ext(fileHeader.Filename)
 	fileName := id.String() + ext
-	imageFile, err := s.storage.Save(ctx, fileName, file)
+	err := s.storage.Save(ctx, fileName, file)
 	if err != nil {
 		return param.UploadImageResponse{}, fmt.Errorf("can't save image")
 	}
 
 
 	imageEntity := entity.Image{
-		OriginalName: imageFile.OriginalName,
-		OriginalKey: imageFile.OriginalKey,
+		OriginalName: fileHeader.Filename,
+		OriginalKey: fileName,
 		ThumbnailKey: "",
-		ContentType: imageFile.ContentType,
-		Size: imageFile.Size,
+		ContentType: ext,
+		Size: uint(fileHeader.Size),
 		Status: constant.PROCESSING,
 
 	}
 
 	imageRepo, err := s.imageRepo.Save(ctx, imageEntity)
 	if err != nil {
-		sErr := s.storage.Remove(ctx, imageFile.OriginalKey)
+		sErr := s.storage.Remove(ctx, fileName)
 		if sErr != nil {
 			return param.UploadImageResponse{},fmt.Errorf("error in remove file: %w", sErr)
 		}
@@ -94,11 +94,11 @@ func (s Service) Upload(ctx context.Context, req param.UploadImageRequest) (para
 
 	return param.UploadImageResponse{
 		ID: imageRepo.ID,
-		OriginalName: imageFile.OriginalName,
-		OriginalKey: imageFile.OriginalKey,
+		OriginalName: fileHeader.Filename,
+		OriginalKey: fileName,
 		ThumbnailKey: imageRepo.ThumbnailKey,
-		ContentType: imageFile.ContentType,
-		Size: imageFile.Size,
+		ContentType: ext,
+		Size: uint(fileHeader.Size),
 		Status: imageRepo.Status,
 
 	}, nil
