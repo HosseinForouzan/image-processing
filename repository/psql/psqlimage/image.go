@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"image_processing/entity"
+
 )
 
 func (d *DB) Save(ctx context.Context, image entity.Image) (entity.Image, error) {
@@ -32,4 +33,11 @@ func (d *DB) GetByID(ctx context.Context, id uint) (entity.Image, error) {
 	}
 
 	return image, nil
+}
+
+func (d *DB) Update(ctx context.Context, image entity.Image) error {
+	query := `UPDATE images SET thumbnail_key = $1, status=$2, updated_at = NOW() WHERE id = $3`
+	_, err := d.conn.Conn().Exec(ctx, query, image.ThumbnailKey, image.Status, image.ID)
+
+	return err
 }

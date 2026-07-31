@@ -20,6 +20,7 @@ import (
 type ImageRepository interface {
 	Save(ctx context.Context, image entity.Image) (entity.Image, error)
 	GetByID(ctx context.Context, id uint) (entity.Image, error)
+	Update(ctx context.Context, image entity.Image) error
 }
 
 type Storage interface {
@@ -143,11 +144,14 @@ func (s Service) DownloadOriginal(ctx context.Context, req param.DownloadImageRe
 
 func (s Service) ProcessImage(ctx context.Context, imageID uint) error {
 	image, err := s.imageRepo.GetByID(ctx, imageID)
+
+	fmt.Println(image)
 	if err != nil {
 		return err
 	}
 
 	file, err := s.storage.Open(ctx, image.OriginalKey)
+
 
 	img, err := imaging.Decode(file)
 	if err != nil {
@@ -159,8 +163,21 @@ func (s Service) ProcessImage(ctx context.Context, imageID uint) error {
 	buf := new(bytes.Buffer)
 	err = imaging.Encode(buf, thumbnail, imaging.PNG)
 
-	thumbnailKey := fmt.Sprintf("thumbnails/%s.png", image.ID)
+	if err != nil {
+		return nil
+	}
+
+	thumbnailKey := fmt.Sprintf("../thumbnails/%d.png", image.ID)
 	err = s.storage.Save(ctx, thumbnailKey, buf)
+	if err != nil {
+		return err
+	}
+
+	image.Status = constant.COMPLETED
+	image.ThumbnailKey = thumbnailKey
+
+	err = s.imageRepo.Update(ctx, image)
+
 
 
 
