@@ -127,7 +127,7 @@ func (s Service) DownloadOriginal(ctx context.Context, req param.DownloadImageRe
 	if err != nil {
 		return param.DownloadImageResponse{}, fmt.Errorf("unexpected error: %w", err)
 	}
-	file, err := s.storage.Open(ctx, image.OriginalKey)
+	file, err := s.storage.Open(ctx, "originals/" + image.OriginalKey)
 
 	return param.DownloadImageResponse{
 		ID: image.ID,
@@ -142,15 +142,35 @@ func (s Service) DownloadOriginal(ctx context.Context, req param.DownloadImageRe
 
 }
 
+func (s Service) DownloadThumbnail(ctx context.Context, req param.DownloadImageRequest) (param.DownloadImageResponse, error) {
+	image, err := s.imageRepo.GetByID(ctx, req.ID)
+	if err != nil {
+		return param.DownloadImageResponse{}, fmt.Errorf("unexpected error: %w", err)
+	}
+	file, err := s.storage.Open(ctx, "thumbnails/" + image.ThumbnailKey)
+
+	return param.DownloadImageResponse{
+		ID: image.ID,
+		OriginalName: image.OriginalName,
+		OriginalKey: image.OriginalKey,
+		ThumbnailKey: image.ThumbnailKey,
+		ContentType: image.ContentType,
+		Size: image.Size,
+		Status: image.Status,
+		File: file,
+	}, nil
+
+}
+
+
 func (s Service) ProcessImage(ctx context.Context, imageID uint) error {
 	image, err := s.imageRepo.GetByID(ctx, imageID)
 
-	fmt.Println(image)
 	if err != nil {
 		return err
 	}
 
-	file, err := s.storage.Open(ctx, image.OriginalKey)
+	file, err := s.storage.Open(ctx, "originals/" + image.OriginalKey)
 
 
 	img, err := imaging.Decode(file)

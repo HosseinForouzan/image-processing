@@ -27,7 +27,7 @@ func main() {
 	// 	log.Fatal(err)
 	// }
 
-	root := "storage/originals"
+	root := "storage/"
 	psql := psql.NewPgxPool()
 	psqlImage := psqlimage.New(psql)
 
