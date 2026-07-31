@@ -1,6 +1,7 @@
 package main
 
 import (
+	"context"
 	"fmt"
 	"image_processing/broker"
 	"image_processing/delivery/httpserver"
@@ -9,6 +10,9 @@ import (
 	"image_processing/repository/storage"
 	"image_processing/service/imageservice"
 	"log"
+	"os"
+	"os/signal"
+	"syscall"
 )
 
 func main() {
@@ -35,7 +39,15 @@ func main() {
 
 	imageSvc := imageservice.New(psqlImage, storageRepo, brokerRepo)
 
-	handler := httpserver.New(imageSvc)
+	server := httpserver.New(imageSvc)
 
-	handler.Serve()
+	ctx, stop := signal.NotifyContext(context.Background(), os.Interrupt, syscall.SIGTERM)
+	defer stop()
+
+	if err := server.Serve(ctx); err != nil {
+		fmt.Println("server error:", err)
+	}
+
+	fmt.Println("server exited succesfully!")
+
 }
