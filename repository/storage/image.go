@@ -9,7 +9,7 @@ import (
 
 )
 
-func (l LocalStorage) Save(cctx context.Context ,key string, file io.Reader) error {
+func (l LocalStorage) Save(ctx context.Context , key string, file io.Reader) error {
 
 	path := filepath.Join(l.root, key)
 
@@ -27,8 +27,8 @@ func (l LocalStorage) Save(cctx context.Context ,key string, file io.Reader) err
 	return nil
 }
 
-func (l LocalStorage) Remove(ctx context.Context, fileName string) error {
-	return os.Remove(l.root + "/" + fileName)
+func (l LocalStorage) Remove(ctx context.Context, path, fileName string) error {
+	return os.Remove(l.root + path + fileName)
 }
 
 func (l LocalStorage) Open(ctx context.Context, key string) (io.ReadCloser, error) {

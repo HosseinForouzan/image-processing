@@ -21,11 +21,12 @@ type ImageRepository interface {
 	Save(ctx context.Context, image entity.Image) (entity.Image, error)
 	GetByID(ctx context.Context, id uint) (entity.Image, error)
 	Update(ctx context.Context, image entity.Image) error
+	Remove(ctx context.Context, id uint) error
 }
 
 type Storage interface {
 	Save(ctx context.Context ,key string, file io.Reader) ( error)
-	Remove(ctx context.Context, fileName string) error
+	Remove(ctx context.Context, path, fileName string) error
 	Open(ctx context.Context, key string) (io.ReadCloser, error)
 }
 
@@ -55,7 +56,7 @@ func (s Service) Upload(ctx context.Context, req param.UploadImageRequest) (para
 	id := uuid.New()
 	ext := filepath.Ext(fileHeader.Filename)
 	fileName := id.String() + ext
-	err := s.storage.Save(ctx, fileName, file)
+	err := s.storage.Save(ctx, "originals/" + fileName, file)
 	if err != nil {
 		return param.UploadImageResponse{}, fmt.Errorf("can't save image")
 	}
@@ -73,7 +74,7 @@ func (s Service) Upload(ctx context.Context, req param.UploadImageRequest) (para
 
 	imageRepo, err := s.imageRepo.Save(ctx, imageEntity)
 	if err != nil {
-		sErr := s.storage.Remove(ctx, fileName)
+		sErr := s.storage.Remove(ctx, "originals/" ,fileName)
 		if sErr != nil {
 			return param.UploadImageResponse{},fmt.Errorf("error in remove file: %w", sErr)
 		}
@@ -162,6 +163,35 @@ func (s Service) DownloadThumbnail(ctx context.Context, req param.DownloadImageR
 
 }
 
+func (s Service) RemoveImage(ctx context.Context, id uint) error {
+	image, err := s.imageRepo.GetByID(ctx, id)
+	if err != nil {
+		fmt.Println(err)
+		return fmt.Errorf("unexpected error: %w", err)
+	}
+
+	oErr := s.storage.Remove(ctx, "originals/", image.OriginalKey )
+	if oErr != nil {
+		fmt.Println(oErr)
+		return fmt.Errorf("unexpected error: %w", err)
+	}
+
+	tErr := s.storage.Remove(ctx, "thumbnails/", image.ThumbnailKey)
+	if tErr != nil {
+		fmt.Println(tErr)
+		return fmt.Errorf("unexpected error: %w", tErr)
+	}
+
+	pErr := s.imageRepo.Remove(ctx, id)
+	if pErr != nil {
+		fmt.Println(pErr)
+		return fmt.Errorf("unexpected error: %w", pErr)
+	}
+
+	return nil
+
+}
+
 
 func (s Service) ProcessImage(ctx context.Context, imageID uint) error {
 	image, err := s.imageRepo.GetByID(ctx, imageID)
@@ -187,8 +217,8 @@ func (s Service) ProcessImage(ctx context.Context, imageID uint) error {
 		return nil
 	}
 
-	thumbnailKey := fmt.Sprintf("../thumbnails/%d.png", image.ID)
-	err = s.storage.Save(ctx, thumbnailKey, buf)
+	thumbnailKey := fmt.Sprintf("%d.png", image.ID)
+	err = s.storage.Save(ctx, "thumbnails/" + thumbnailKey, buf)
 	if err != nil {
 		return err
 	}

@@ -41,3 +41,13 @@ func (d *DB) Update(ctx context.Context, image entity.Image) error {
 
 	return err
 }
+
+func (d *DB) Remove(ctx context.Context, id uint) error {
+	query := `DELETE FROM images WHERE id = $1`
+	_, err := d.conn.Conn().Exec(ctx, query, id)
+	if err != nil {
+		return fmt.Errorf("can't remove item:%w", err)
+	}
+
+	return nil
+}
