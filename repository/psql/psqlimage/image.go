@@ -42,6 +42,14 @@ func (d *DB) Update(ctx context.Context, image entity.Image) error {
 	return err
 }
 
+func (d *DB) UpdateStatus(ctx context.Context, id uint, status string) error {
+	query := `UPDATE images SET status = $1, updated_at = NOW(), WHERE id = $2`
+	_, err := d.conn.Conn().Exec(ctx, query, status, id)
+
+	return err
+
+}
+
 func (d *DB) Remove(ctx context.Context, id uint) error {
 	query := `DELETE FROM images WHERE id = $1`
 	_, err := d.conn.Conn().Exec(ctx, query, id)
@@ -51,3 +59,4 @@ func (d *DB) Remove(ctx context.Context, id uint) error {
 
 	return nil
 }
+

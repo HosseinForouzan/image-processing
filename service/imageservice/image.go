@@ -22,6 +22,7 @@ type ImageRepository interface {
 	GetByID(ctx context.Context, id uint) (entity.Image, error)
 	Update(ctx context.Context, image entity.Image) error
 	Remove(ctx context.Context, id uint) error
+	UpdateStatus(ctx context.Context, id uint, status string) error
 }
 
 type Storage interface {
@@ -230,6 +231,35 @@ func (s Service) ProcessImage(ctx context.Context, imageID uint) error {
 
 
 
+
+	return nil
+}
+
+func (s Service) Retry(ctx context.Context, id uint) error {
+	image, err := s.imageRepo.GetByID(ctx, id)
+	if err != nil {
+		return fmt.Errorf("unexpected error: %w", err)
+	}
+
+	if !image.CanRetry() {
+		return fmt.Errorf("image is not failed.")
+	}
+
+	err = s.imageRepo.UpdateStatus(ctx, id, constant.PROCESSING)
+	if err != nil {
+		return fmt.Errorf("unexpected error: %w", err)
+	}
+
+	evt := event.ImageUploaded{ImageID: id}
+	body, err := json.Marshal(evt)
+	if err != nil {
+		return err
+	}
+
+	err = s.broker.Publish(ctx, "image_processing", body)
+	if err != nil {
+		return err
+	}
 
 	return nil
 }

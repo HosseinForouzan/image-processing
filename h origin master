@@ -1,0 +1,17 @@
+[33m7b8183b[m[33m ([m[1;36mHEAD -> [m[1;32mmaster[m[33m)[m HEAD@{0}: reset: moving to HEAD
+[33m7b8183b[m[33m ([m[1;36mHEAD -> [m[1;32mmaster[m[33m)[m HEAD@{1}: reset: moving to HEAD
+[33m7b8183b[m[33m ([m[1;36mHEAD -> [m[1;32mmaster[m[33m)[m HEAD@{2}: commit: add remove part
+[33me30da72[m HEAD@{3}: commit: add image thumbnail download
+[33me9a6f6f[m[33m ([m[1;31morigin/master[m[33m)[m HEAD@{4}: commit: complete poccess of image thumbnail
+[33m39af24b[m HEAD@{5}: commit: refactor image service
+[33m78383a9[m HEAD@{6}: commit: refactor image save storage
+[33m06e278e[m HEAD@{7}: commit: add rabbitmq and publisher and consumer
+[33m1dd5f9d[m HEAD@{8}: commit: add downloadOriginal
+[33m76f85eb[m HEAD@{9}: commit: add getimage info
+[33m383cbb4[m HEAD@{10}: commit: add rollback image part
+[33mca7a30f[m HEAD@{11}: commit: add image validator
+[33m5229988[m HEAD@{12}: commit: add image psql repo
+[33m5c34201[m HEAD@{13}: commit: refactor image service and repository. refacctor saveimage
+[33m58f2e56[m HEAD@{14}: commit: add storage repo
+[33m6f6b1f8[m HEAD@{15}: commit: add delivery part
+[33mfbc6e67[m HEAD@{16}: commit (initial): initialize project

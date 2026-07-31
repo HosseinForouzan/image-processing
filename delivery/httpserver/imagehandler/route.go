@@ -10,6 +10,7 @@ func (h Handler) SetRoutes(e *echo.Echo) {
 	imageGroup.GET("/:id/original", h.DownloadOriginal)
 	imageGroup.GET("/:id/thumbnail", h.DownloadThumbnail)
 	imageGroup.DELETE("/:id", h.Remove)
+	imageGroup.POST("/:id/retry", h.Retry)
 
 
 }
