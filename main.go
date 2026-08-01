@@ -13,6 +13,7 @@ import (
 	"os"
 	"os/signal"
 	"syscall"
+	"time"
 )
 
 func main() {
@@ -40,12 +41,19 @@ func main() {
 	imageSvc := imageservice.New(psqlImage, storageRepo, brokerRepo)
 
 	server := httpserver.New(imageSvc)
+	server.Serve()
 
 	ctx, stop := signal.NotifyContext(context.Background(), os.Interrupt, syscall.SIGTERM)
 	defer stop()
+	<-ctx.Done()
 
-	if err := server.Serve(ctx); err != nil {
-		fmt.Println("server error:", err)
+	fmt.Println("Shutting down the server...")
+
+	shutdownCtx, cancel := context.WithTimeout(context.Background(), time.Second * 10)
+	defer cancel()
+
+	if err := server.Router.Shutdown(shutdownCtx); err != nil {
+		log.Println("server shutdown error:", err)
 	}
 
 	fmt.Println("server exited succesfully!")

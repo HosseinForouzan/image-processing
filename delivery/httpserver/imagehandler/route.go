@@ -1,6 +1,10 @@
 package imagehandler
 
-import "github.com/labstack/echo/v5"
+import (
+
+	"github.com/labstack/echo/v4"
+
+)
 
 func (h Handler) SetRoutes(e *echo.Echo) {
 	imageGroup := e.Group("/images")
@@ -11,6 +15,8 @@ func (h Handler) SetRoutes(e *echo.Echo) {
 	imageGroup.GET("/:id/thumbnail", h.DownloadThumbnail)
 	imageGroup.DELETE("/:id", h.Remove)
 	imageGroup.POST("/:id/retry", h.Retry)
+	
+
 
 
 }

@@ -5,10 +5,10 @@ import (
 	"net/http"
 	"strconv"
 
-	"github.com/labstack/echo/v5"
+	"github.com/labstack/echo/v4"
 )
 
-func (h Handler) Retry(c *echo.Context) error {
+func (h Handler) Retry(c echo.Context) error {
 	i := c.Param("id")
 	id, err := strconv.Atoi(i)
 	idUint := uint(id)

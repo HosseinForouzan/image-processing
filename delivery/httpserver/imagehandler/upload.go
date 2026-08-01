@@ -4,10 +4,10 @@ import (
 	"image_processing/param"
 	"net/http"
 
-	"github.com/labstack/echo/v5"
+	"github.com/labstack/echo/v4"
 )
 
-func (h Handler) Upload(c *echo.Context) error {
+func (h Handler) Upload(c echo.Context) error {
 	fileHeader, err := c.FormFile("image")
 	if err != nil {
 		return echo.NewHTTPError(http.StatusBadRequest, err.Error())

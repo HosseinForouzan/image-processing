@@ -6,10 +6,10 @@ import (
 	"net/http"
 	"strconv"
 
-	"github.com/labstack/echo/v5"
+	"github.com/labstack/echo/v4"
 )
 
-func (h Handler) DownloadOriginal(c *echo.Context) error {
+func (h Handler) DownloadOriginal(c echo.Context) error {
 	i := c.Param("id")
 	id, err := strconv.Atoi(i)
 	idUint := uint(id)
@@ -26,7 +26,7 @@ func (h Handler) DownloadOriginal(c *echo.Context) error {
 	return c.Stream(http.StatusOK, resp.ContentType, resp.File)
 }
 
-func (h Handler) DownloadThumbnail(c *echo.Context) error {
+func (h Handler) DownloadThumbnail(c echo.Context) error {
 	i := c.Param("id")
 	id, err := strconv.Atoi(i)
 	idUint := uint(id)
