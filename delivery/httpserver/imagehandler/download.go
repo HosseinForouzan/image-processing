@@ -9,6 +9,16 @@ import (
 	"github.com/labstack/echo/v4"
 )
 
+// DownloadOriginal downloads the original image.
+//
+// @Summary Download original image
+// @Description Download original image by ID
+// @Tags Images
+// @Produce application/octet-stream
+// @Param id path string true "Image ID"
+// @Success 200 {file} param.DownloadImageRequest
+// @Failure 404 {object} error
+// @Router /images/{id}/original [get]
 func (h Handler) DownloadOriginal(c echo.Context) error {
 	i := c.Param("id")
 	id, err := strconv.Atoi(i)
@@ -26,6 +36,17 @@ func (h Handler) DownloadOriginal(c echo.Context) error {
 	return c.Stream(http.StatusOK, resp.ContentType, resp.File)
 }
 
+
+// DownloadThumbnail downloads the thmbnail image.
+//
+// @Summary Download thumbnail image
+// @Description Download thumbnail image by ID
+// @Tags Images
+// @Produce application/octet-stream
+// @Param id path string true "Image ID"
+// @Success 200 {file} param.DownloadImageRequest
+// @Failure 404 {object} error
+// @Router /images/{id}/thumbnail [get]
 func (h Handler) DownloadThumbnail(c echo.Context) error {
 	i := c.Param("id")
 	id, err := strconv.Atoi(i)

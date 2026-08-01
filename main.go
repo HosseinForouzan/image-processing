@@ -1,4 +1,13 @@
+// @title           Image Processing API
+// @version         1.0
+// @description     Image Processing Service with RabbitMQ
+// @BasePath        /
+
+// @contact.name    Hossein Forouzan
+// @contact.email   hosseinf97@gmail.com
+
 package main
+
 
 import (
 	"context"

@@ -1,3 +1,5 @@
+
+
 package imagehandler
 
 import (
@@ -7,6 +9,17 @@ import (
 	"github.com/labstack/echo/v4"
 )
 
+// UploadImage godoc
+//
+// @Summary Upload image
+// @Description Upload original image
+// @Tags Images
+// @Accept multipart/form-data
+// @Produce json
+// @Param image formData file true "Image"
+// @Success 201 {object} param.UploadImageResponse
+// @Failure 400 {object} error
+// @Router /images/upload [post]
 func (h Handler) Upload(c echo.Context) error {
 	fileHeader, err := c.FormFile("image")
 	if err != nil {

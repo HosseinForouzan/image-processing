@@ -1,0 +1,189 @@
+basePath: /
+definitions:
+  param.GetImageResponse:
+    properties:
+      content_type:
+        type: string
+      id:
+        type: integer
+      original_key:
+        type: string
+      original_name:
+        type: string
+      size:
+        type: integer
+      status:
+        type: string
+      thumbnail_key:
+        type: string
+    type: object
+  param.UploadImageResponse:
+    properties:
+      content_type:
+        type: string
+      id:
+        type: integer
+      original_key:
+        type: string
+      original_name:
+        type: string
+      size:
+        type: integer
+      status:
+        type: string
+      thumbnail_key:
+        type: string
+    type: object
+info:
+  contact:
+    email: hosseinf97@gmail.com
+    name: Hossein Forouzan
+  description: Image Processing Service with RabbitMQ
+  title: Image Processing API
+  version: "1.0"
+paths:
+  /images/{id}:
+    delete:
+      consumes:
+      - application/json
+      description: Deletes an image along with its original and thumbnail files
+      parameters:
+      - description: Image ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "204":
+          description: Image deleted successfully
+        "400":
+          description: Bad Request
+          schema: {}
+        "404":
+          description: Not Found
+          schema: {}
+      summary: Delete image
+      tags:
+      - Images
+    get:
+      consumes:
+      - application/json
+      description: Returns metadata of an image by its ID
+      parameters:
+      - description: Image ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/param.GetImageResponse'
+        "400":
+          description: Bad Request
+          schema: {}
+        "404":
+          description: Not Found
+          schema: {}
+      summary: Get image information
+      tags:
+      - Images
+  /images/{id}/original:
+    get:
+      description: Download original image by ID
+      parameters:
+      - description: Image ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/octet-stream
+      responses:
+        "200":
+          description: OK
+          schema:
+            type: file
+        "404":
+          description: Not Found
+          schema: {}
+      summary: Download original image
+      tags:
+      - Images
+  /images/{id}/retry:
+    post:
+      consumes:
+      - application/json
+      description: Republishes the image processing job to RabbitMQ
+      parameters:
+      - description: Image ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "204":
+          description: Image queued for processing
+        "400":
+          description: Bad Request
+          schema: {}
+        "404":
+          description: Not Found
+          schema: {}
+      summary: Retry image processing
+      tags:
+      - Images
+  /images/{id}/thumbnail:
+    get:
+      description: Download thumbnail image by ID
+      parameters:
+      - description: Image ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/octet-stream
+      responses:
+        "200":
+          description: OK
+          schema:
+            type: file
+        "404":
+          description: Not Found
+          schema: {}
+      summary: Download thumbnail image
+      tags:
+      - Images
+  /images/upload:
+    post:
+      consumes:
+      - multipart/form-data
+      description: Upload original image
+      parameters:
+      - description: Image
+        in: formData
+        name: image
+        required: true
+        type: file
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/param.UploadImageResponse'
+        "400":
+          description: Bad Request
+          schema: {}
+      summary: Upload image
+      tags:
+      - Images
+swagger: "2.0"

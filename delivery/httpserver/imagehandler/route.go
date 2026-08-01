@@ -3,10 +3,15 @@ package imagehandler
 import (
 
 	"github.com/labstack/echo/v4"
+	echoSwagger "github.com/swaggo/echo-swagger"
+	_ "image_processing/docs"
 
 )
 
 func (h Handler) SetRoutes(e *echo.Echo) {
+
+	e.GET("/swagger/*", echoSwagger.WrapHandler)
+
 	imageGroup := e.Group("/images")
 
 	imageGroup.POST("/upload", h.Upload)

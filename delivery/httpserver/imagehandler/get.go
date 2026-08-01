@@ -8,6 +8,19 @@ import (
 	"github.com/labstack/echo/v4"
 )
 
+
+// GetImage returns image information by ID.
+//
+// @Summary Get image information
+// @Description Returns metadata of an image by its ID
+// @Tags Images
+// @Accept json
+// @Produce json
+// @Param id path int true "Image ID"
+// @Success 200 {object} param.GetImageResponse
+// @Failure 400 {object} error
+// @Failure 404 {object} error
+// @Router /images/{id} [get]
 func (h Handler) Get(c echo.Context) error {
 	i := c.Param("id")
 	id, err := strconv.Atoi(i)
