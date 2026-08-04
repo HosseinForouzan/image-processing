@@ -8,10 +8,11 @@ import (
 	"image_processing/constant"
 	"image_processing/entity"
 	"image_processing/event"
+	"image_processing/metrics"
 	"image_processing/param"
 	"io"
 	"path/filepath"
-
+	"time"
 
 	"github.com/disintegration/imaging"
 	"github.com/google/uuid"
@@ -52,6 +53,9 @@ func New(imageRepo ImageRepository, storage Storage, broker Broker) Service {
 }
 
 func (s Service) Upload(ctx context.Context, req param.UploadImageRequest) (param.UploadImageResponse, error) {
+	
+	start := time.Now()
+
 	fileHeader := req.Image
 	file, _ := fileHeader.Open()
 	id := uuid.New()
@@ -92,6 +96,11 @@ func (s Service) Upload(ctx context.Context, req param.UploadImageRequest) (para
 	if rErr != nil {
 		return param.UploadImageResponse{}, rErr
 	}
+
+	metrics.UploadCounter.Inc()
+	metrics.UploadDuration.Observe(
+		float64(time.Since(start).Seconds()),
+	)
 
 
 

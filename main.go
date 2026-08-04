@@ -8,12 +8,12 @@
 
 package main
 
-
 import (
 	"context"
 	"fmt"
 	"image_processing/broker"
 	"image_processing/delivery/httpserver"
+	"image_processing/metrics"
 	"image_processing/repository/psql"
 	"image_processing/repository/psql/psqlimage"
 	"image_processing/repository/storage"
@@ -26,6 +26,8 @@ import (
 )
 
 func main() {
+
+	metrics.Init()
 
 	rabbitURL := "amqp://guest:guest@localhost:5672/"
 	brokerRepo, err := broker.New(rabbitURL)

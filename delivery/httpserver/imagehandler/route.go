@@ -1,7 +1,7 @@
 package imagehandler
 
 import (
-
+	"github.com/prometheus/client_golang/prometheus/promhttp"
 	"github.com/labstack/echo/v4"
 	echoSwagger "github.com/swaggo/echo-swagger"
 	_ "image_processing/docs"
@@ -11,6 +11,7 @@ import (
 func (h Handler) SetRoutes(e *echo.Echo) {
 
 	e.GET("/swagger/*", echoSwagger.WrapHandler)
+	e.GET("/metrics", echo.WrapHandler(promhttp.Handler()))
 
 	imageGroup := e.Group("/images")
 
